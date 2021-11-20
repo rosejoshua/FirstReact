@@ -15,6 +15,7 @@ export default function MyDateInput({ label, ...props }) {
         {...props}
         selected={(field.value && new Date(field.value)) || null}
         onChange={value => setFieldValue(field.name, value)}
+        autoComplete='off'
       />
       {meta.touched && meta.error ? (
         <Label basic color='red'>
