@@ -14,5 +14,5 @@ export default function MyTextInput({ label, ...props }) {
         </Label>
       ) : null}
     </FormField>
-  )
+  );
 }
