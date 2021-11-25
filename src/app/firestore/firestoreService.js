@@ -1,5 +1,4 @@
 import firebaseConfig from '../config/firebaseConfig';
-import firebase from 'firebase/compat/app';
 import cuid from 'cuid';
 
 const db = firebaseConfig.firestore();
@@ -35,7 +34,7 @@ export function addEventToFirestore(event) {
         ...event,
         hostedBy: 'Diana',
         hostPhotoURL: 'https://randomuser.me/api/portraits/women/20.jpg',
-        attendees: firebase.firestore.FieldValue.arrayUnion({
+        attendees: firebaseConfig.firestore.FieldValue.arrayUnion({
             id: cuid(),
             displayName: 'Diana',
             photoURL: 'https://randomuser.me/api/portraits/women/20.jpg',
@@ -54,5 +53,14 @@ export function deleteEventInFirestore(eventId) {
 export function cancelEventToggle(event) {
     return db.collection('events').doc(event.id).update({
         isCancelled: !event.isCancelled
+    })
+}
+
+export function setUserProfileData(user) {
+    return db.collection('users').doc(user.uid).set({
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL || null,
+        createdAt: firebaseConfig.firestore.FieldValue.serverTimestamp()
     })
 }
