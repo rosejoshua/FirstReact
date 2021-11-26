@@ -1,12 +1,17 @@
 import { SIGN_IN_USER, SIGN_OUT_USER } from './authConstants';
 import firebaseConfig from '../../app/config/firebaseConfig';
 import { APP_LOADED } from '../../app/async/asyncReducer';
+import {
+  dataFromSnapshot,
+  getUserProfile,
+} from '../../app/firestore/firestoreService';
+import { listenToCurrentUserProfile } from '../profiles/profileActions';
 
 export function signInUser(user) {
   return {
-      type: SIGN_IN_USER,
-      payload: user
-  }
+    type: SIGN_IN_USER,
+    payload: user,
+  };
 }
 
 export function verifyAuth() {
@@ -14,10 +19,14 @@ export function verifyAuth() {
     return firebaseConfig.auth().onAuthStateChanged((user) => {
       if (user) {
         dispatch(signInUser(user));
-        dispatch({type: APP_LOADED})
+        const profileRef = getUserProfile(user.uid);
+        profileRef.onSnapshot((snapshot) => {
+          dispatch(listenToCurrentUserProfile(dataFromSnapshot(snapshot)));
+          dispatch({ type: APP_LOADED });
+        });
       } else {
         dispatch(signOutUser());
-        dispatch({type: APP_LOADED})
+        dispatch({ type: APP_LOADED });
       }
     });
   };
